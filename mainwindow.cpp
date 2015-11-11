@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // connect the buttons to their corresponding actions
     connect(ui->buttonAdd, SIGNAL(clicked()), this, SLOT(addType()));
+    connect(ui->buttonRemove, SIGNAL(clicked()), this, SLOT(deleteType()));
 }
 
 MainWindow::~MainWindow()
@@ -52,4 +53,12 @@ void MainWindow::addType()
     // and tau
     QDoubleSpinBox *tau = new QDoubleSpinBox();
     ui->table->setCellWidget(ui->table->rowCount() - 1, 1, tau);
+}
+
+void MainWindow::deleteType()
+{
+    if(ui->table->currentRow() >= 0) { // row exists?
+        // then delete it!
+        ui->table->removeRow(ui->table->currentRow());
+    }
 }

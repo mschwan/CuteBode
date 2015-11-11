@@ -39,6 +39,7 @@ private:
 
 private slots:
     void addType();
+    void deleteType();
 };
 
 #endif // MAINWINDOW_H
