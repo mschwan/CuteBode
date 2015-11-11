@@ -22,10 +22,34 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    // create user interface
     ui->setupUi(this);
+
+    // setup table to show type and tau
+    ui->table->setRowCount(0);
+    ui->table->setColumnCount(2);
+    ui->table->setHorizontalHeaderLabels(QStringList() << "Type" << "Tau");
+
+    // connect the buttons to their corresponding actions
+    connect(ui->buttonAdd, SIGNAL(clicked()), this, SLOT(addType()));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::addType()
+{
+    // add a row for new widgets
+    ui->table->setRowCount(ui->table->rowCount() + 1);
+
+    // the type
+    QComboBox *type = new QComboBox();
+    type->addItems(QStringList() << "None" << "1" << "2" << "3" << "4");
+    ui->table->setCellWidget(ui->table->rowCount() - 1, 0, type);
+
+    // and tau
+    QDoubleSpinBox *tau = new QDoubleSpinBox();
+    ui->table->setCellWidget(ui->table->rowCount() - 1, 1, tau);
 }

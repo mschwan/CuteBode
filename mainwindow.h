@@ -19,6 +19,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QComboBox>
+#include <QDoubleSpinBox>
 
 namespace Ui {
 class MainWindow;
@@ -34,6 +36,9 @@ public:
 
 private:
     Ui::MainWindow *ui;
+
+private slots:
+    void addType();
 };
 
 #endif // MAINWINDOW_H
