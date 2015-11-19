@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // connect the buttons to their corresponding actions
     connect(ui->buttonAdd, SIGNAL(clicked()), this, SLOT(addType()));
     connect(ui->buttonRemove, SIGNAL(clicked()), this, SLOT(deleteType()));
+    connect(ui->buttonView, SIGNAL(clicked()), this, SLOT(viewPlot()));
 }
 
 MainWindow::~MainWindow()
@@ -60,5 +61,48 @@ void MainWindow::deleteType()
     if(ui->table->currentRow() >= 0) { // row exists?
         // then delete it!
         ui->table->removeRow(ui->table->currentRow());
+    }
+}
+
+void MainWindow::viewPlot()
+{
+    // clear the list before we fill it
+    while(!trfList.isEmpty()) {
+        trfList.removeLast();
+    }
+
+    for(int i = 0; i < ui->table->rowCount(); i++) {
+        QComboBox *comboBox = new QComboBox();
+        QDoubleSpinBox *spinBox = new QDoubleSpinBox();
+        Trf *trf = new Trf();
+
+        comboBox = dynamic_cast<QComboBox *>(ui->table->cellWidget(i, 0));
+        spinBox = dynamic_cast<QDoubleSpinBox *>(ui->table->cellWidget(i, 1));
+
+        switch(comboBox->currentText().toInt()) {
+        case 1:
+            trf->setType(Trf::Type1);
+            break;
+        case 2:
+            trf->setType(Trf::Type2);
+            break;
+        case 3:
+            trf->setType(Trf::Type3);
+            break;
+        case 4:
+            trf->setType(Trf::Type4);
+            break;
+        default:
+            continue;
+        }
+
+        trf->setTau(spinBox->value());
+        trfList.append(trf);
+    }
+
+    // for debug purposes only
+    qDebug() << "----------";
+    foreach(Trf *t, trfList) {
+        qDebug() << t << t->getType() << t->getTau();
     }
 }

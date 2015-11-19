@@ -19,8 +19,14 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTableWidget>
 #include <QComboBox>
 #include <QDoubleSpinBox>
+#include <QList>
+
+#include "trf.h"
+
+#include <QDebug>
 
 namespace Ui {
 class MainWindow;
@@ -36,10 +42,12 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QList<Trf *> trfList;
 
 private slots:
     void addType();
     void deleteType();
+    void viewPlot();
 };
 
 #endif // MAINWINDOW_H
