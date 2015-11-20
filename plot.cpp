@@ -15,40 +15,22 @@
     along with CuteBode.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
-#include <QMainWindow>
-#include <QTableWidget>
-#include <QComboBox>
-#include <QDoubleSpinBox>
-#include <QList>
-
-#include "trf.h"
 #include "plot.h"
 
-#include <QDebug>
-
-namespace Ui {
-class MainWindow;
+Plot::Plot(QWidget *parent) :
+    QFrame(parent)
+{
+    pen.setWidthF(1.2);
 }
 
-class MainWindow : public QMainWindow
+void Plot::paintEvent(QPaintEvent *)
 {
-    Q_OBJECT
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setPen(pen);
 
-public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    double w = (double) width() / 100.0;
+    double h = - (double) height() / 100.0;
 
-private:
-    Ui::MainWindow *ui;
-    QList<Trf *> trfList;
-
-private slots:
-    void addType();
-    void deleteType();
-    void viewPlot();
-};
-
-#endif // MAINWINDOW_H
+    painter.drawLine(0, 0, w*100, h*0 + height());
+}

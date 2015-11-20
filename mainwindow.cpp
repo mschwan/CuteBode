@@ -25,6 +25,14 @@ MainWindow::MainWindow(QWidget *parent) :
     // create user interface
     ui->setupUi(this);
 
+    // add plot widgets
+    Plot *plotMagnitude = new Plot(this);
+    Plot *plotPhase = new Plot(this);
+    plotMagnitude->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+    plotPhase->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+    ui->layoutPlot->addWidget(plotMagnitude);
+    ui->layoutPlot->addWidget(plotPhase);
+
     // setup table to show type and tau
     ui->table->setRowCount(0);
     ui->table->setColumnCount(2);
@@ -93,6 +101,7 @@ void MainWindow::viewPlot()
             trf->setType(Trf::Type4);
             break;
         default:
+            delete trf;
             continue;
         }
 

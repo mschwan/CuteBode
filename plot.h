@@ -15,40 +15,24 @@
     along with CuteBode.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef PLOT_H
+#define PLOT_H
 
-#include <QMainWindow>
-#include <QTableWidget>
-#include <QComboBox>
-#include <QDoubleSpinBox>
-#include <QList>
+#include <QFrame>
+#include <QPainter>
 
-#include "trf.h"
-#include "plot.h"
-
-#include <QDebug>
-
-namespace Ui {
-class MainWindow;
-}
-
-class MainWindow : public QMainWindow
+class Plot : public QFrame
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit Plot(QWidget *parent = 0);
 
 private:
-    Ui::MainWindow *ui;
-    QList<Trf *> trfList;
+    QPen pen;
 
-private slots:
-    void addType();
-    void deleteType();
-    void viewPlot();
+protected:
+    void paintEvent(QPaintEvent *);
 };
 
-#endif // MAINWINDOW_H
+#endif // PLOT_H

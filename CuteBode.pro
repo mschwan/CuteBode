@@ -14,9 +14,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    trf.cpp
+    trf.cpp \
+    plot.cpp
 
 HEADERS  += mainwindow.h \
-    trf.h
+    trf.h \
+    plot.h
 
 FORMS    += mainwindow.ui
