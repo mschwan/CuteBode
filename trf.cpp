@@ -20,6 +20,8 @@
 Trf::Trf(QObject *parent) :
     QObject(parent)
 {
+    this->type = Type1;
+    this->tau = 1;
 }
 
 Trf::Type Trf::getType()
