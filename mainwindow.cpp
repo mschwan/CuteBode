@@ -80,8 +80,8 @@ void MainWindow::viewPlot()
     }
 
     for(int i = 0; i < ui->table->rowCount(); i++) {
-        QComboBox *comboBox = new QComboBox();
-        QDoubleSpinBox *spinBox = new QDoubleSpinBox();
+        QComboBox *comboBox;
+        QDoubleSpinBox *spinBox;
         Trf *trf = new Trf();
 
         comboBox = dynamic_cast<QComboBox *>(ui->table->cellWidget(i, 0));
