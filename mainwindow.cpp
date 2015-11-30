@@ -26,12 +26,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     // add plot widgets
-    Plot *plotMagnitude = new Plot(this);
-    Plot *plotPhase = new Plot(this);
-    plotMagnitude->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
-    plotPhase->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
-    ui->layoutPlot->addWidget(plotMagnitude);
-    ui->layoutPlot->addWidget(plotPhase);
+    Plot *plot = new Plot(this);
+    plot->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+    ui->layoutPlot->addWidget(plot);
 
     // setup table to show type and tau
     ui->table->setRowCount(0);

@@ -18,21 +18,14 @@
 #ifndef PLOT_H
 #define PLOT_H
 
-#include <QFrame>
-#include <QPainter>
+#include <QGraphicsView>
 
-class Plot : public QFrame
+class Plot : public QGraphicsView
 {
     Q_OBJECT
 
 public:
     explicit Plot(QWidget *parent = 0);
-
-private:
-    QPen pen;
-
-protected:
-    void paintEvent(QPaintEvent *);
 };
 
 #endif // PLOT_H

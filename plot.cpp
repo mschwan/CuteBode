@@ -18,19 +18,6 @@
 #include "plot.h"
 
 Plot::Plot(QWidget *parent) :
-    QFrame(parent)
+    QGraphicsView(parent)
 {
-    pen.setWidthF(1.2);
-}
-
-void Plot::paintEvent(QPaintEvent *)
-{
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setPen(pen);
-
-    double w = (double) width() / 100.0;
-    double h = - (double) height() / 100.0;
-
-    painter.drawLine(0, 0, w*100, h*0 + height());
 }
