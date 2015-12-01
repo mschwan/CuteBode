@@ -23,6 +23,7 @@
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QList>
+#include <QShortcut>
 
 #include "trf.h"
 #include "plot.h"
@@ -45,6 +46,9 @@ private:
     Ui::MainWindow *ui;
     QList<Trf *> trfList;
     Plot *plot;
+    QShortcut *shortAdd;
+    QShortcut *shortDelete;
+    QShortcut *shortView;
 
 private slots:
     void addType();

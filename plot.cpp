@@ -20,12 +20,22 @@
 Plot::Plot(QWidget *parent) :
     QGraphicsView(parent)
 {
+    fStart = 10;
+    fStop = 500;
+
     scene = new QGraphicsScene(this);
     this->setScene(scene);
 
-    for(int i = 0; i < 10; i++) {
+    pen.setWidth(2);
+    pen.setCapStyle(Qt::FlatCap);
+    pen.setStyle(Qt::DashLine);
+
+    this->setRenderHints(QPainter::Antialiasing);
+    this->setTransform(QTransform::fromScale(1, -1));
+
+    for(int i = 0; i <= fStop - fStart; i++) {
         QPointF *p = new QPointF();
-        p->setX(i + 1); // omega
+        p->setX(i + fStart); // omega
         p->setY(0);
         magnitude.append(p);
     }
@@ -34,6 +44,9 @@ Plot::Plot(QWidget *parent) :
 void Plot::calculateMagnitude(QList<Trf *> trfList)
 {
     // clear everything
+    scene->clear();
+    this->viewport()->update();
+
     foreach(QPointF *p, magnitude) {
         p->setY(0);
     }
@@ -42,7 +55,7 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
     double re = 0;
     double im = 0;
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i <= fStop - fStart; i++) {
         foreach(Trf *trf, trfList) {
             switch(trf->getType()) {
             case Trf::Type1:
@@ -73,7 +86,22 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
 
 void Plot::plot()
 {
+    QPainterPath painterPath;
+    QPolygonF polygon;
+
     foreach(QPointF *p, magnitude) {
-        scene->addEllipse(p->x(), p->y(), 1, 1);
+        polygon.append(QPointF(p->x(), p->y()));
     }
+
+    painterPath.addPolygon(polygon);
+    scene->addPath(painterPath, pen);
+
+    // IMPORTANT: stop one item before the end!
+    /*for(int i = 0; i < fStop - fStart; i++) {
+        scene->addLine(magnitude.at(i)->x(),
+                       magnitude.at(i)->y(),
+                       magnitude.at(i + 1)->x(),
+                       magnitude.at(i + 1)->y(),
+                       QPen(Qt::blue));
+    }*/
 }

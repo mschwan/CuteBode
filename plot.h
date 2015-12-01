@@ -37,8 +37,9 @@ public:
 
 private:
     QGraphicsScene *scene;
-    //int fStart = 1;
-    //int fStop = 10;
+    QPen pen;
+    int fStart;
+    int fStop;
 };
 
 #endif // PLOT_H

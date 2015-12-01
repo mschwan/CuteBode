@@ -35,6 +35,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->table->setColumnCount(2);
     ui->table->setHorizontalHeaderLabels(QStringList() << "Type" << "Tau");
 
+    // shortcuts
+    shortAdd = new QShortcut(this);
+    shortDelete = new QShortcut(this);
+    shortView = new QShortcut(this);
+    shortAdd->setKey(Qt::CTRL + Qt::Key_A);
+    shortDelete->setKey(Qt::CTRL + Qt::Key_X);
+    shortView->setKey(Qt::CTRL + Qt::Key_P);
+    connect(shortAdd, SIGNAL(activated()), this, SLOT(addType()));
+    connect(shortDelete, SIGNAL(activated()), this, SLOT(deleteType()));
+    connect(shortView, SIGNAL(activated()), this, SLOT(viewPlot()));
+
     // connect the buttons to their corresponding actions
     connect(ui->buttonAdd, SIGNAL(clicked()), this, SLOT(addType()));
     connect(ui->buttonRemove, SIGNAL(clicked()), this, SLOT(deleteType()));
@@ -58,6 +69,8 @@ void MainWindow::addType()
 
     // and tau
     QDoubleSpinBox *tau = new QDoubleSpinBox();
+    tau->setRange(-100, 100);
+    tau->setDecimals(6);
     ui->table->setCellWidget(ui->table->rowCount() - 1, 1, tau);
 }
 
