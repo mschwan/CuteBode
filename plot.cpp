@@ -20,4 +20,60 @@
 Plot::Plot(QWidget *parent) :
     QGraphicsView(parent)
 {
+    scene = new QGraphicsScene(this);
+    this->setScene(scene);
+
+    for(int i = 0; i < 10; i++) {
+        QPointF *p = new QPointF();
+        p->setX(i + 1); // omega
+        p->setY(0);
+        magnitude.append(p);
+    }
+}
+
+void Plot::calculateMagnitude(QList<Trf *> trfList)
+{
+    // clear everything
+    foreach(QPointF *p, magnitude) {
+        p->setY(0);
+    }
+
+    double m = 0;
+    double re = 0;
+    double im = 0;
+
+    for(int i = 0; i < 10; i++) {
+        foreach(Trf *trf, trfList) {
+            switch(trf->getType()) {
+            case Trf::Type1:
+                m = magnitude.at(i)->x() * trf->getTau();
+                magnitude.at(i)->setY(magnitude.at(i)->y() + m);
+                break;
+            case Trf::Type2:
+                m = sqrt(1 + pow(magnitude.at(i)->x() * trf->getTau(), 2));
+                magnitude.at(i)->setY(magnitude.at(i)->y() + m);
+                break;
+            case Trf::Type3:
+                m = 1.0 / (magnitude.at(i)->x() * trf->getTau());
+                magnitude.at(i)->setY(magnitude.at(i)->y() + m);
+                break;
+            case Trf::Type4:
+                re = 1.0 / (1 + pow(magnitude.at(i)->x() * trf->getTau(), 2));
+                im = (magnitude.at(i)->x() * trf->getTau()) /
+                     (1 + pow(magnitude.at(i)->x() * trf->getTau(), 2));
+                m = sqrt(pow(re, 2) + pow(im, 2));
+                magnitude.at(i)->setY(magnitude.at(i)->y() + m);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+}
+
+void Plot::plot()
+{
+    foreach(QPointF *p, magnitude) {
+        scene->addEllipse(p->x(), p->y(), 1, 1);
+    }
 }

@@ -44,6 +44,7 @@ public:
 private:
     Ui::MainWindow *ui;
     QList<Trf *> trfList;
+    Plot *plot;
 
 private slots:
     void addType();

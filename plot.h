@@ -19,6 +19,11 @@
 #define PLOT_H
 
 #include <QGraphicsView>
+#include <cmath>
+
+#include "trf.h"
+
+#include <QDebug>
 
 class Plot : public QGraphicsView
 {
@@ -26,6 +31,14 @@ class Plot : public QGraphicsView
 
 public:
     explicit Plot(QWidget *parent = 0);
+    void calculateMagnitude(QList<Trf *> trfList);
+    void plot();
+    QVector<QPointF *> magnitude;
+
+private:
+    QGraphicsScene *scene;
+    //int fStart = 1;
+    //int fStop = 10;
 };
 
 #endif // PLOT_H

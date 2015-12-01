@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     // add plot widgets
-    Plot *plot = new Plot(this);
+    plot = new Plot(this);
     plot->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
     ui->layoutPlot->addWidget(plot);
 
@@ -111,4 +111,13 @@ void MainWindow::viewPlot()
     foreach(Trf *t, trfList) {
         qDebug() << t << t->getType() << t->getTau();
     }
+
+    plot->calculateMagnitude(trfList);
+
+    qDebug() << "---";
+    foreach(QPointF *p, plot->magnitude) {
+        qDebug() << p << p->x() << p->y();
+    }
+
+    plot->plot();
 }
