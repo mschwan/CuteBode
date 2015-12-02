@@ -39,12 +39,15 @@ MainWindow::MainWindow(QWidget *parent) :
     shortAdd = new QShortcut(this);
     shortDelete = new QShortcut(this);
     shortView = new QShortcut(this);
+    shortQuit = new QShortcut(this);
     shortAdd->setKey(Qt::CTRL + Qt::Key_A);
     shortDelete->setKey(Qt::CTRL + Qt::Key_X);
     shortView->setKey(Qt::CTRL + Qt::Key_P);
+    shortQuit->setKey(Qt::CTRL + Qt::Key_Q);
     connect(shortAdd, SIGNAL(activated()), this, SLOT(addType()));
     connect(shortDelete, SIGNAL(activated()), this, SLOT(deleteType()));
     connect(shortView, SIGNAL(activated()), this, SLOT(viewPlot()));
+    connect(shortQuit, SIGNAL(activated()), this, SLOT(close()));
 
     // connect the buttons to their corresponding actions
     connect(ui->buttonAdd, SIGNAL(clicked()), this, SLOT(addType()));
@@ -128,8 +131,9 @@ void MainWindow::viewPlot()
     plot->calculateMagnitude(trfList);
 
     qDebug() << "---";
+    int _ip = 0;
     foreach(QPointF *p, plot->magnitude) {
-        qDebug() << p << p->x() << p->y();
+        qDebug() << p << _ip++ << ":" << p->x() << p->y();
     }
 
     plot->plot();

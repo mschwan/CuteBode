@@ -49,6 +49,7 @@ private:
     QShortcut *shortAdd;
     QShortcut *shortDelete;
     QShortcut *shortView;
+    QShortcut *shortQuit;
 
 private slots:
     void addType();

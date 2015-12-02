@@ -19,6 +19,8 @@
 #define PLOT_H
 
 #include <QGraphicsView>
+#include <QAbstractScrollArea>
+#include <QWheelEvent>
 #include <cmath>
 
 #include "trf.h"
@@ -32,14 +34,15 @@ class Plot : public QGraphicsView
 public:
     explicit Plot(QWidget *parent = 0);
     void calculateMagnitude(QList<Trf *> trfList);
+    void toLog(QVector<QPointF *> linearPoints);
     void plot();
     QVector<QPointF *> magnitude;
 
 private:
     QGraphicsScene *scene;
     QPen pen;
-    int fStart;
-    int fStop;
+    unsigned int fStart;
+    unsigned int fStop;
 };
 
 #endif // PLOT_H

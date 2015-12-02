@@ -21,41 +21,34 @@ Plot::Plot(QWidget *parent) :
     QGraphicsView(parent)
 {
     fStart = 10;
-    fStop = 500;
+    fStop = 10000;
 
     scene = new QGraphicsScene(this);
     this->setScene(scene);
 
     pen.setWidth(2);
-    pen.setCapStyle(Qt::FlatCap);
-    pen.setStyle(Qt::DashLine);
+    pen.setStyle(Qt::SolidLine);
 
     this->setRenderHints(QPainter::Antialiasing);
     this->setTransform(QTransform::fromScale(1, -1));
-
-    for(int i = 0; i <= fStop - fStart; i++) {
-        QPointF *p = new QPointF();
-        p->setX(i + fStart); // omega
-        p->setY(0);
-        magnitude.append(p);
-    }
 }
 
 void Plot::calculateMagnitude(QList<Trf *> trfList)
 {
-    // clear everything
-    scene->clear();
-    this->viewport()->update();
+    magnitude.clear();
 
-    foreach(QPointF *p, magnitude) {
-        p->setY(0);
+    for(unsigned int i = fStart; i <= fStop; i++) {
+        QPointF *p = new QPointF();
+        p->setX(i); // omega
+        p->setY(0); // empty magnitude
+        magnitude.append(p);
     }
 
     double m = 0;
     double re = 0;
     double im = 0;
 
-    for(int i = 0; i <= fStop - fStart; i++) {
+    for(unsigned int i = 0; i <= fStop - fStart; i++) {
         foreach(Trf *trf, trfList) {
             switch(trf->getType()) {
             case Trf::Type1:
@@ -82,10 +75,30 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
             }
         }
     }
+
+    toLog(magnitude);
+}
+
+void Plot::toLog(QVector<QPointF *> linearPoints)
+{
+    foreach(QPointF *p, linearPoints) {
+        double lx = p->x();
+        double la = (double) fStart;
+        double ld = 200.0;
+        p->setX(ld * log10(lx / la));
+
+        double ua = p->y();
+        double ue = 1.0;
+        double lu = 10.0;
+        p->setY(20.0 * lu * log10(ua / ue));
+    }
 }
 
 void Plot::plot()
 {
+    scene->clear();
+    this->viewport()->update();
+
     QPainterPath painterPath;
     QPolygonF polygon;
 
@@ -95,13 +108,4 @@ void Plot::plot()
 
     painterPath.addPolygon(polygon);
     scene->addPath(painterPath, pen);
-
-    // IMPORTANT: stop one item before the end!
-    /*for(int i = 0; i < fStop - fStart; i++) {
-        scene->addLine(magnitude.at(i)->x(),
-                       magnitude.at(i)->y(),
-                       magnitude.at(i + 1)->x(),
-                       magnitude.at(i + 1)->y(),
-                       QPen(Qt::blue));
-    }*/
 }
