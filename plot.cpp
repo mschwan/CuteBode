@@ -21,13 +21,14 @@ Plot::Plot(QWidget *parent) :
     QGraphicsView(parent)
 {
     fStart = 10;
-    fStop = 10000;
+    fStop = 1000;
 
     scene = new QGraphicsScene(this);
     this->setScene(scene);
 
-    pen.setWidth(2);
-    pen.setStyle(Qt::SolidLine);
+    penMagnitude.setWidth(2);
+    penMagnitude.setStyle(Qt::SolidLine);
+    penAxis.setColor(QColor::fromRgb(64, 64, 64));
 
     this->setRenderHints(QPainter::Antialiasing);
     this->setTransform(QTransform::fromScale(1, -1));
@@ -35,13 +36,13 @@ Plot::Plot(QWidget *parent) :
 
 void Plot::calculateMagnitude(QList<Trf *> trfList)
 {
-    magnitude.clear();
+    magnitudePoints.clear();
 
     for(unsigned int i = fStart; i <= fStop; i++) {
         QPointF *p = new QPointF();
         p->setX(i); // omega
         p->setY(0); // empty magnitude
-        magnitude.append(p);
+        magnitudePoints.append(p);
     }
 
     double m = 0;
@@ -52,23 +53,23 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
         foreach(Trf *trf, trfList) {
             switch(trf->getType()) {
             case Trf::Type1:
-                m = magnitude.at(i)->x() * trf->getTau();
-                magnitude.at(i)->setY(magnitude.at(i)->y() + m);
+                m = magnitudePoints.at(i)->x() * trf->getTau();
+                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() + m);
                 break;
             case Trf::Type2:
-                m = sqrt(1 + pow(magnitude.at(i)->x() * trf->getTau(), 2));
-                magnitude.at(i)->setY(magnitude.at(i)->y() + m);
+                m = sqrt(1 + pow(magnitudePoints.at(i)->x() * trf->getTau(), 2));
+                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() + m);
                 break;
             case Trf::Type3:
-                m = 1.0 / (magnitude.at(i)->x() * trf->getTau());
-                magnitude.at(i)->setY(magnitude.at(i)->y() + m);
+                m = 1.0 / (magnitudePoints.at(i)->x() * trf->getTau());
+                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() + m);
                 break;
             case Trf::Type4:
-                re = 1.0 / (1 + pow(magnitude.at(i)->x() * trf->getTau(), 2));
-                im = (magnitude.at(i)->x() * trf->getTau()) /
-                     (1 + pow(magnitude.at(i)->x() * trf->getTau(), 2));
+                re = 1.0 / (1 + pow(magnitudePoints.at(i)->x() * trf->getTau(), 2));
+                im = (magnitudePoints.at(i)->x() * trf->getTau()) /
+                     (1 + pow(magnitudePoints.at(i)->x() * trf->getTau(), 2));
                 m = sqrt(pow(re, 2) + pow(im, 2));
-                magnitude.at(i)->setY(magnitude.at(i)->y() + m);
+                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() + m);
                 break;
             default:
                 break;
@@ -76,7 +77,38 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
         }
     }
 
-    toLog(magnitude);
+    toLog(magnitudePoints);
+}
+
+void Plot::calculateXAxis()
+{
+    xAxisPoints.clear();
+
+    qDebug() << "--- axis";
+
+    unsigned int i = fStart;
+
+    while(i <= 100) {
+        qDebug() << i;
+        QPointF *p = new QPointF();
+        p->setX(i);
+        p->setY(1);
+        xAxisPoints.append(p);
+        i += 10;
+    }
+
+    i += 100 - 10;
+
+    while(i <= 1000 && i > 100) {
+        qDebug() << i;
+        QPointF *p = new QPointF();
+        p->setX(i);
+        p->setY(1);
+        xAxisPoints.append(p);
+        i += 100;
+    }
+
+    toLog(xAxisPoints);
 }
 
 void Plot::toLog(QVector<QPointF *> linearPoints)
@@ -99,13 +131,30 @@ void Plot::plot()
     scene->clear();
     this->viewport()->update();
 
-    QPainterPath painterPath;
-    QPolygonF polygon;
+    QPainterPath pathMagnitude;
+    QPainterPath pathXAxis;
+    QPolygonF polygonMagnitude; // this is the plotted line
+    QPolygonF polygonXAxis;
 
-    foreach(QPointF *p, magnitude) {
-        polygon.append(QPointF(p->x(), p->y()));
+    foreach(QPointF *p, magnitudePoints) {
+        polygonMagnitude.append(QPointF(p->x(), p->y()));
     }
 
-    painterPath.addPolygon(polygon);
-    scene->addPath(painterPath, pen);
+    foreach(QPointF *p, xAxisPoints) {
+        polygonXAxis.append(QPointF(p->x(), p->y()));
+    }
+
+    for(unsigned int i = 0; i <= 400; i += 200) {
+        QGraphicsTextItem *textItem = new QGraphicsTextItem();
+        textItem->setPlainText(QString::number(10 * pow(10, i / 200)));
+        textItem->setPos(i, 0);
+        textItem->setTransform(QTransform::fromScale(1, -1));
+        scene->addItem(textItem);
+    }
+
+    pathMagnitude.addPolygon(polygonMagnitude);
+    pathXAxis.addPolygon(polygonXAxis);
+
+    scene->addPath(pathMagnitude, penMagnitude);
+    scene->addPath(pathXAxis, penAxis);
 }

@@ -129,10 +129,11 @@ void MainWindow::viewPlot()
     }
 
     plot->calculateMagnitude(trfList);
+    plot->calculateXAxis();
 
-    qDebug() << "---";
+    qDebug() << "--- magnitude";
     int _ip = 0;
-    foreach(QPointF *p, plot->magnitude) {
+    foreach(QPointF *p, plot->magnitudePoints) {
         qDebug() << p << _ip++ << ":" << p->x() << p->y();
     }
 
