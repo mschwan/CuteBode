@@ -22,6 +22,8 @@ Plot::Plot(QWidget *parent) :
 {
     fStart = 10;
     fStop = 1000;
+    lengthXDiv = 200;
+    lengthYDiv = 200;
 
     scene = new QGraphicsScene(this);
     this->setScene(scene);
@@ -32,6 +34,8 @@ Plot::Plot(QWidget *parent) :
 
     this->setRenderHints(QPainter::Antialiasing);
     this->setTransform(QTransform::fromScale(1, -1));
+
+    //connect(this->scene, SIGNAL(sceneRectChanged(QRectF))
 }
 
 void Plot::calculateMagnitude(QList<Trf *> trfList)
@@ -41,7 +45,7 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
     for(unsigned int i = fStart; i <= fStop; i++) {
         QPointF *p = new QPointF();
         p->setX(i); // omega
-        p->setY(0); // empty magnitude
+        p->setY(1); // empty magnitude
         magnitudePoints.append(p);
     }
 
@@ -54,22 +58,22 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
             switch(trf->getType()) {
             case Trf::Type1:
                 m = magnitudePoints.at(i)->x() * trf->getTau();
-                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() + m);
+                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() * m);
                 break;
             case Trf::Type2:
                 m = sqrt(1 + pow(magnitudePoints.at(i)->x() * trf->getTau(), 2));
-                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() + m);
+                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() * m);
                 break;
             case Trf::Type3:
                 m = 1.0 / (magnitudePoints.at(i)->x() * trf->getTau());
-                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() + m);
+                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() * m);
                 break;
             case Trf::Type4:
                 re = 1.0 / (1 + pow(magnitudePoints.at(i)->x() * trf->getTau(), 2));
                 im = (magnitudePoints.at(i)->x() * trf->getTau()) /
                      (1 + pow(magnitudePoints.at(i)->x() * trf->getTau(), 2));
                 m = sqrt(pow(re, 2) + pow(im, 2));
-                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() + m);
+                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() * m);
                 break;
             default:
                 break;
@@ -78,6 +82,19 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
     }
 
     toLog(magnitudePoints);
+
+    yMin = magnitudePoints.at(0)->y();
+    yMax = magnitudePoints.at(0)->y();
+
+    for(unsigned int i = 1; i <= fStop - fStart; i++) {
+        if(magnitudePoints.at(i)->y() < yMin) {
+            yMin = magnitudePoints.at(i)->y();
+        }
+
+        if(magnitudePoints.at(i)->y() > yMax) {
+            yMax = magnitudePoints.at(i)->y();
+        }
+    }
 }
 
 void Plot::calculateXAxis()
@@ -86,29 +103,11 @@ void Plot::calculateXAxis()
 
     qDebug() << "--- axis";
 
-    unsigned int i = fStart;
-
-    while(i <= 100) {
+    for(unsigned int i = 0; i < log10(fStop); i++) {
         qDebug() << i;
-        QPointF *p = new QPointF();
-        p->setX(i);
-        p->setY(1);
+        QPointF *p = new QPointF(i * lengthXDiv, 0);
         xAxisPoints.append(p);
-        i += 10;
     }
-
-    i += 100 - 10;
-
-    while(i <= 1000 && i > 100) {
-        qDebug() << i;
-        QPointF *p = new QPointF();
-        p->setX(i);
-        p->setY(1);
-        xAxisPoints.append(p);
-        i += 100;
-    }
-
-    toLog(xAxisPoints);
 }
 
 void Plot::toLog(QVector<QPointF *> linearPoints)
@@ -131,18 +130,19 @@ void Plot::plot()
     scene->clear();
     this->viewport()->update();
 
+    // magnitude
+
     QPainterPath pathMagnitude;
-    QPainterPath pathXAxis;
     QPolygonF polygonMagnitude; // this is the plotted line
-    QPolygonF polygonXAxis;
 
     foreach(QPointF *p, magnitudePoints) {
         polygonMagnitude.append(QPointF(p->x(), p->y()));
     }
 
-    foreach(QPointF *p, xAxisPoints) {
-        polygonXAxis.append(QPointF(p->x(), p->y()));
-    }
+    pathMagnitude.addPolygon(polygonMagnitude);
+    scene->addPath(pathMagnitude, penMagnitude);
+
+    // axis
 
     for(unsigned int i = 0; i <= 400; i += 200) {
         QGraphicsTextItem *textItem = new QGraphicsTextItem();
@@ -152,9 +152,26 @@ void Plot::plot()
         scene->addItem(textItem);
     }
 
-    pathMagnitude.addPolygon(polygonMagnitude);
+    /*QPainterPath pathXAxis;
+    QPolygonF polygonXAxis;
+
+    foreach(QPointF *p, xAxisPoints) {
+        polygonXAxis.append(QPointF(p->x(), p->y()));
+    }
+
+
     pathXAxis.addPolygon(polygonXAxis);
 
-    scene->addPath(pathMagnitude, penMagnitude);
-    scene->addPath(pathXAxis, penAxis);
+    scene->addPath(pathXAxis, penAxis);*/
+    for(int i = (int) yMin / (int) lengthYDiv;
+        i <= (int) yMax / (int) lengthYDiv;
+        i++) {
+        scene->addLine(0, i * lengthYDiv,
+                       lengthXDiv * (log10(fStop) - 1), i * lengthYDiv,
+                       penAxis);
+    }
+
+    qDebug() << "Y min/max:" << yMin << yMax;
+    qDebug() << "  yAxisMin" << (int) yMin / (int) lengthYDiv << "\n"
+             << "  yAxisMax" << (int) yMax / (int) lengthYDiv;
 }

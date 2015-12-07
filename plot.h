@@ -42,6 +42,10 @@ private:
     QGraphicsScene *scene;
     QPen penMagnitude;
     QPen penAxis;
+    double yMin;
+    double yMax;
+    double lengthXDiv;
+    double lengthYDiv;
     unsigned int fStart;
     unsigned int fStop;
     void toLog(QVector<QPointF *> linearPoints);

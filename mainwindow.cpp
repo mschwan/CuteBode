@@ -129,7 +129,7 @@ void MainWindow::viewPlot()
     }
 
     plot->calculateMagnitude(trfList);
-    plot->calculateXAxis();
+    //plot->calculateXAxis();
 
     qDebug() << "--- magnitude";
     int _ip = 0;
