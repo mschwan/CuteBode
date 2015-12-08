@@ -55,28 +55,30 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
 
     for(unsigned int i = 0; i <= fStop - fStart; i++) {
         foreach(Trf *trf, trfList) {
-            switch(trf->getType()) {
-            case Trf::Type1:
-                m = magnitudePoints.at(i)->x() * trf->getTau();
-                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() * m);
-                break;
-            case Trf::Type2:
-                m = sqrt(1 + pow(magnitudePoints.at(i)->x() * trf->getTau(), 2));
-                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() * m);
-                break;
-            case Trf::Type3:
-                m = 1.0 / (magnitudePoints.at(i)->x() * trf->getTau());
-                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() * m);
-                break;
-            case Trf::Type4:
-                re = 1.0 / (1 + pow(magnitudePoints.at(i)->x() * trf->getTau(), 2));
-                im = (magnitudePoints.at(i)->x() * trf->getTau()) /
-                     (1 + pow(magnitudePoints.at(i)->x() * trf->getTau(), 2));
-                m = sqrt(pow(re, 2) + pow(im, 2));
-                magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() * m);
-                break;
-            default:
-                break;
+            if(trf->getTau() != 0) {
+                switch(trf->getType()) {
+                case Trf::Type1:
+                    m = magnitudePoints.at(i)->x() * trf->getTau();
+                    magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() * m);
+                    break;
+                case Trf::Type2:
+                    m = sqrt(1 + pow(magnitudePoints.at(i)->x() * trf->getTau(), 2));
+                    magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() * m);
+                    break;
+                case Trf::Type3:
+                    m = 1.0 / (magnitudePoints.at(i)->x() * trf->getTau());
+                    magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() * m);
+                    break;
+                case Trf::Type4:
+                    re = 1.0 / (1 + pow(magnitudePoints.at(i)->x() * trf->getTau(), 2));
+                    im = (magnitudePoints.at(i)->x() * trf->getTau()) /
+                         (1 + pow(magnitudePoints.at(i)->x() * trf->getTau(), 2));
+                    m = sqrt(pow(re, 2) + pow(im, 2));
+                    magnitudePoints.at(i)->setY(magnitudePoints.at(i)->y() * m);
+                    break;
+                default:
+                    break;
+                }
             }
         }
     }
@@ -144,6 +146,7 @@ void Plot::plot()
 
     // axis
 
+    // decades
     for(unsigned int i = 0; i <= 400; i += 200) {
         QGraphicsTextItem *textItem = new QGraphicsTextItem();
         textItem->setPlainText(QString::number(10 * pow(10, i / 200)));
@@ -152,26 +155,36 @@ void Plot::plot()
         scene->addItem(textItem);
     }
 
-    /*QPainterPath pathXAxis;
-    QPolygonF polygonXAxis;
-
-    foreach(QPointF *p, xAxisPoints) {
-        polygonXAxis.append(QPointF(p->x(), p->y()));
-    }
-
-
-    pathXAxis.addPolygon(polygonXAxis);
-
-    scene->addPath(pathXAxis, penAxis);*/
-    for(int i = (int) yMin / (int) lengthYDiv;
-        i <= (int) yMax / (int) lengthYDiv;
+    // x axis
+    for(int i = (int) (yMin / lengthYDiv) - 1;
+        i <= (int) (yMax / lengthYDiv) + 1;
         i++) {
         scene->addLine(0, i * lengthYDiv,
                        lengthXDiv * (log10(fStop) - 1), i * lengthYDiv,
                        penAxis);
     }
 
+    // y axis
+    for(int i = 0;
+        i <= 2;
+        i++) {
+        scene->addLine(i * lengthXDiv, (int) yMin - ((int) yMin % (int) lengthYDiv) - lengthYDiv,
+                       i * lengthXDiv, (int) yMax - ((int) yMax % (int) lengthYDiv) + lengthYDiv,
+                       penAxis);
+    }
+
     qDebug() << "Y min/max:" << yMin << yMax;
-    qDebug() << "  yAxisMin" << (int) yMin / (int) lengthYDiv << "\n"
-             << "  yAxisMax" << (int) yMax / (int) lengthYDiv;
+    qDebug() << "yAxisMin" << yMin * lengthYDiv << "\n"
+             << "yAxisMax" << yMax * lengthYDiv;
+
+    // resize scene rectangle
+
+    this->scene->setSceneRect(-50,
+                              (int) yMin - ((int) yMin % (int) lengthYDiv) - lengthYDiv - 50, // FIXME
+                              2 * lengthXDiv + 2*50,
+                              (int) yMax - ((int) yMax % (int) lengthYDiv) + lengthYDiv + 100); // FIXME
+    this->scene->addRect(this->sceneRect(), QPen(QColor::fromRgb(255, 15, 0, 64), 2, Qt::DotLine));
+    qDebug() << "sceneRect"
+             << this->sceneRect().x() << this->sceneRect().y()
+             << this->sceneRect().width() << this->sceneRect().height();
 }

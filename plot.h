@@ -36,6 +36,7 @@ public:
     void calculateXAxis();
     void plot();
     QVector<QPointF *> magnitudePoints;
+    //QVector<QPointF *> phasePoints;
     QVector<QPointF *> xAxisPoints;
 
 private:
