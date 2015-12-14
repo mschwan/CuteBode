@@ -146,14 +146,6 @@ void Plot::plot()
 
     // axis
 
-    // decades
-    for(unsigned int i = 0; i <= 400; i += 200) {
-        QGraphicsTextItem *textItem = new QGraphicsTextItem();
-        textItem->setPlainText(QString::number(10 * pow(10, i / 200)));
-        textItem->setPos(i, 0);
-        textItem->setTransform(QTransform::fromScale(1, -1));
-        scene->addItem(textItem);
-    }
 
     // x axis
     for(int i = (int) (yMin / lengthYDiv) - 1;
@@ -165,26 +157,53 @@ void Plot::plot()
     }
 
     // y axis
+    int y1 = (int) yMin - ((int) yMin % (int) lengthYDiv) - (int) lengthYDiv;
+    int y2 = (int) yMax - ((int) yMax % (int) lengthYDiv) + (int) lengthYDiv;
+
     for(int i = 0;
         i <= 2;
         i++) {
-        scene->addLine(i * lengthXDiv, (int) yMin - ((int) yMin % (int) lengthYDiv) - lengthYDiv,
-                       i * lengthXDiv, (int) yMax - ((int) yMax % (int) lengthYDiv) + lengthYDiv,
+        scene->addLine(i * lengthXDiv, y1,
+                       i * lengthXDiv, y2,
                        penAxis);
     }
 
     qDebug() << "Y min/max:" << yMin << yMax;
-    qDebug() << "yAxisMin" << yMin * lengthYDiv << "\n"
-             << "yAxisMax" << yMax * lengthYDiv;
+    qDebug() << "y1" << y1 << "\n"
+             << "y2" << y2;
 
     // resize scene rectangle
 
     this->scene->setSceneRect(-50,
-                              (int) yMin - ((int) yMin % (int) lengthYDiv) - lengthYDiv - 50, // FIXME
+                              y1 -50,
                               2 * lengthXDiv + 2*50,
-                              (int) yMax - ((int) yMax % (int) lengthYDiv) + lengthYDiv + 100); // FIXME
+                              y2 - y1 +100);
     this->scene->addRect(this->sceneRect(), QPen(QColor::fromRgb(255, 15, 0, 64), 2, Qt::DotLine));
     qDebug() << "sceneRect"
              << this->sceneRect().x() << this->sceneRect().y()
              << this->sceneRect().width() << this->sceneRect().height();
+
+    // text
+    QGraphicsTextItem *textItemFrequency = new QGraphicsTextItem();
+    textItemFrequency->setPlainText("f : "
+                                    + QString::number(fStart)
+                                    + " ... "
+                                    + QString::number(fStop)
+                                    + " Hz");
+    textItemFrequency->setPos(lengthXDiv, sceneRect().top() + 50);
+    textItemFrequency->setTransform(QTransform::fromScale(1, -1));
+    scene->addItem(textItemFrequency);
+
+    QGraphicsTextItem *textItemMagnitude = new QGraphicsTextItem();
+    textItemMagnitude->setPlainText("|H| : "
+                                    + QString::number(y1 / 10)
+                                    + " ... "
+                                    + QString::number(y2 / 10)
+                                    + " dB");
+    textItemMagnitude->setPos(textItemMagnitude->boundingRect().height() / -2 - 25,
+                              y1 + (y2 - y1) / 2
+                              - textItemMagnitude->boundingRect().width() / 2);
+    textItemMagnitude->setTransform(QTransform::fromScale(1, -1));
+    textItemMagnitude->setRotation(-90);
+    scene->addItem(textItemMagnitude);
 }
