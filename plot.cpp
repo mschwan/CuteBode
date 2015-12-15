@@ -17,6 +17,11 @@
 
 #include "plot.h"
 
+/**
+ * @brief Plot::Plot
+ * @param parent
+ *
+ */
 Plot::Plot(QWidget *parent) :
     QGraphicsView(parent)
 {
@@ -38,6 +43,11 @@ Plot::Plot(QWidget *parent) :
     //connect(this->scene, SIGNAL(sceneRectChanged(QRectF))
 }
 
+/**
+ * @brief Plot::calculateMagnitude
+ * @param trfList
+ *
+ */
 void Plot::calculateMagnitude(QList<Trf *> trfList)
 {
     magnitudePoints.clear();
