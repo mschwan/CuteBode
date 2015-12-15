@@ -20,7 +20,7 @@
 /**
  * @brief Plot::Plot
  * @param parent
- *
+ * Konstruktor
  */
 Plot::Plot(QWidget *parent) :
     QGraphicsView(parent)
@@ -46,7 +46,7 @@ Plot::Plot(QWidget *parent) :
 /**
  * @brief Plot::calculateMagnitude
  * @param trfList
- *
+ * Berechnet den Betragsfrequenzgang
  */
 void Plot::calculateMagnitude(QList<Trf *> trfList)
 {
@@ -109,6 +109,10 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
     }
 }
 
+/**
+ * @brief Plot::calculateXAxis
+ * Initialisiert das Array für die Omega-Achse
+ */
 void Plot::calculateXAxis()
 {
     xAxisPoints.clear();
@@ -122,6 +126,11 @@ void Plot::calculateXAxis()
     }
 }
 
+/**
+ * @brief Plot::toLog
+ * @param linearPoints
+ * Hilfsfunktion um die lineare XAchse in den linearen Bereich verschieben.
+ */
 void Plot::toLog(QVector<QPointF *> linearPoints)
 {
     foreach(QPointF *p, linearPoints) {
@@ -137,6 +146,13 @@ void Plot::toLog(QVector<QPointF *> linearPoints)
     }
 }
 
+/**
+ * @brief Plot::plot
+ * - Löscht alten Plot
+ * - Erstellt Achsenkreuz
+ * - Malt die Funktion
+ * - Fügt Beschriftung der Achsen hinzu
+ */
 void Plot::plot()
 {
     scene->clear();

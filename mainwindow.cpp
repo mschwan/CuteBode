@@ -18,8 +18,20 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+/**
+ * @brief MainWindow::MainWindow
+ * @param parent
+ *
+ * Erstellt MainWindow und schafft die Verbindungen.
+ */
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+
+    /**
+    * @brief ui
+    * Initialisiert die notwendigen Elemente.
+    * Schafft die Verbindung zwischen Programm und Benutzeroberfläche.
+    */
     ui(new Ui::MainWindow)
 {
     // create user interface
@@ -55,11 +67,22 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->buttonView, SIGNAL(clicked()), this, SLOT(viewPlot()));
 }
 
+/**
+ * @brief MainWindow::~MainWindow
+ * Tötet MainWindow
+ */
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+/**
+ * @brief MainWindow::addType
+ * Fügt neuen Typ hinzu (entspricht einer Teilfunktion des Plots):
+ * - schafft die notwendigen Elemente in der Oberfläche
+ * - initialisiert Typ und Tau
+ * - aktualisiert den Pointer auf die aktuelle Zeile
+ */
 void MainWindow::addType()
 {
     // add a row for new widgets
@@ -77,6 +100,10 @@ void MainWindow::addType()
     ui->table->setCellWidget(ui->table->rowCount() - 1, 1, tau);
 }
 
+/**
+ * @brief MainWindow::deleteType
+ * Löscht die angewählte Zeile und gibt den nicht mehr benötigten Speicher frei.
+ */
 void MainWindow::deleteType()
 {
     if(ui->table->currentRow() >= 0) { // row exists?
@@ -85,6 +112,11 @@ void MainWindow::deleteType()
     }
 }
 
+/**
+ * @brief MainWindow::viewPlot
+ * Einlesen der Daten von der Benutzeroberfäche in ein Transferformat.
+ * Aufrufen der Funktion "plot()"
+ */
 void MainWindow::viewPlot()
 {
     // clear the list before we fill it

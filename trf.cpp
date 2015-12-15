@@ -17,6 +17,11 @@
 
 #include "trf.h"
 
+/**
+ * @brief Trf::Trf
+ * @param parent
+ * Konstruktor der Transferfunktion
+ */
 Trf::Trf(QObject *parent) :
     QObject(parent)
 {
@@ -24,21 +29,41 @@ Trf::Trf(QObject *parent) :
     this->tau = 1;
 }
 
+/**
+ * @brief Trf::getType
+ * @return type
+ * Gibt den Typ der Teilfunktion zurück
+ */
 Trf::Type Trf::getType()
 {
     return this->type;
 }
 
+/**
+ * @brief Trf::setType
+ * @param t
+ * Setz den Typ der Teilfunktion
+ */
 void Trf::setType(Type t)
 {
     this->type = t;
 }
 
+/**
+ * @brief Trf::getTau
+ * @return Tau
+ * Gibt den Wert Tau der Teilfunktion zurück
+ */
 double Trf::getTau()
 {
     return this->tau;
 }
 
+/**
+ * @brief Trf::setTau
+ * @param t
+ * Setzt den Wert Tau der Teilfunktion
+ */
 void Trf::setTau(double t)
 {
     this->tau = t;
