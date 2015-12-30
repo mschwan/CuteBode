@@ -119,31 +119,33 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classPlot.html#acb95c0d3a6d1d4edf7b946863efdac98">Plot</a>(QWidget *parent = 0);</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classPlot.html#a1c6fda8fe644da0e0f0df6bf659455de">calculateMagnitude</a>(QList&lt;Trf *&gt; trfList);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classPlot.html#a0a85fd66f164e906708074112bd2d997">calculateXAxis</a>();</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classPlot.html#a8fae6078f872f751aa80d1f037266438">plot</a>();</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    QVector&lt;QPointF *&gt; magnitudePoints;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="comment">//QVector&lt;QPointF *&gt; phasePoints;</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    QVector&lt;QPointF *&gt; xAxisPoints;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    QGraphicsScene *scene;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    QPen penMagnitude;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    QPen penAxis;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">double</span> yMin;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">double</span> yMax;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">double</span> lengthXDiv;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">double</span> lengthYDiv;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> fStart;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> fStop;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">void</span> toLog(QVector&lt;QPointF *&gt; linearPoints);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;};</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#endif // PLOT_H</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">void</span> calculatePhase(QList&lt;Trf *&gt; trfList);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classPlot.html#a0a85fd66f164e906708074112bd2d997">calculateXAxis</a>();</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classPlot.html#a8fae6078f872f751aa80d1f037266438">plot</a>();</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    QVector&lt;QPointF *&gt; magnitudePoints;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    QVector&lt;QPointF *&gt; phasePoints;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    QVector&lt;QPointF *&gt; xAxisPoints;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    QGraphicsScene *scene;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    QPen penMagnitude;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    QPen penPhase;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    QPen penAxis;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">double</span> yMin;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">double</span> yMax;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">double</span> lengthXDiv;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">double</span> lengthYDiv;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> fStart;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> fStop;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordtype">void</span> toLog(QVector&lt;QPointF *&gt; linearPoints, <span class="keywordtype">int</span> log);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;};</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor">#endif // PLOT_H</span></div>
 <div class="ttc" id="classPlot_html"><div class="ttname"><a href="classPlot.html">Plot</a></div><div class="ttdef"><b>Definition:</b> plot.h:29</div></div>
-<div class="ttc" id="classPlot_html_a0a85fd66f164e906708074112bd2d997"><div class="ttname"><a href="classPlot.html#a0a85fd66f164e906708074112bd2d997">Plot::calculateXAxis</a></div><div class="ttdeci">void calculateXAxis()</div><div class="ttdoc">Plot::calculateXAxis Initialisiert das Array für die Omega-Achse. </div><div class="ttdef"><b>Definition:</b> plot.cpp:116</div></div>
+<div class="ttc" id="classPlot_html_a0a85fd66f164e906708074112bd2d997"><div class="ttname"><a href="classPlot.html#a0a85fd66f164e906708074112bd2d997">Plot::calculateXAxis</a></div><div class="ttdeci">void calculateXAxis()</div><div class="ttdoc">Plot::calculateXAxis Initialisiert das Array für die Omega-Achse. </div><div class="ttdef"><b>Definition:</b> plot.cpp:170</div></div>
 <div class="ttc" id="classPlot_html_acb95c0d3a6d1d4edf7b946863efdac98"><div class="ttname"><a href="classPlot.html#acb95c0d3a6d1d4edf7b946863efdac98">Plot::Plot</a></div><div class="ttdeci">Plot(QWidget *parent=0)</div><div class="ttdoc">Plot::Plot. </div><div class="ttdef"><b>Definition:</b> plot.cpp:25</div></div>
-<div class="ttc" id="classPlot_html_a1c6fda8fe644da0e0f0df6bf659455de"><div class="ttname"><a href="classPlot.html#a1c6fda8fe644da0e0f0df6bf659455de">Plot::calculateMagnitude</a></div><div class="ttdeci">void calculateMagnitude(QList&lt; Trf * &gt; trfList)</div><div class="ttdoc">Plot::calculateMagnitude. </div><div class="ttdef"><b>Definition:</b> plot.cpp:51</div></div>
-<div class="ttc" id="classPlot_html_a8fae6078f872f751aa80d1f037266438"><div class="ttname"><a href="classPlot.html#a8fae6078f872f751aa80d1f037266438">Plot::plot</a></div><div class="ttdeci">void plot()</div><div class="ttdoc">Plot::plot. </div><div class="ttdef"><b>Definition:</b> plot.cpp:156</div></div>
+<div class="ttc" id="classPlot_html_a1c6fda8fe644da0e0f0df6bf659455de"><div class="ttname"><a href="classPlot.html#a1c6fda8fe644da0e0f0df6bf659455de">Plot::calculateMagnitude</a></div><div class="ttdeci">void calculateMagnitude(QList&lt; Trf * &gt; trfList)</div><div class="ttdoc">Plot::calculateMagnitude. </div><div class="ttdef"><b>Definition:</b> plot.cpp:56</div></div>
+<div class="ttc" id="classPlot_html_a8fae6078f872f751aa80d1f037266438"><div class="ttname"><a href="classPlot.html#a8fae6078f872f751aa80d1f037266438">Plot::plot</a></div><div class="ttdeci">void plot()</div><div class="ttdoc">Plot::plot. </div><div class="ttdef"><b>Definition:</b> plot.cpp:217</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
