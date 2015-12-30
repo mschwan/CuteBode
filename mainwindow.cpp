@@ -161,11 +161,18 @@ void MainWindow::viewPlot()
     }
 
     plot->calculateMagnitude(trfList);
+    plot->calculatePhase(trfList);
     //plot->calculateXAxis();
 
     qDebug() << "--- magnitude";
     int _ip = 0;
     foreach(QPointF *p, plot->magnitudePoints) {
+        qDebug() << p << _ip++ << ":" << p->x() << p->y();
+    }
+
+    qDebug() << "--- phase";
+    _ip = 0;
+    foreach(QPointF *p, plot->phasePoints) {
         qDebug() << p << _ip++ << ":" << p->x() << p->y();
     }
 

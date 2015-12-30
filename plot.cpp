@@ -34,10 +34,15 @@ Plot::Plot(QWidget *parent) :
     this->setScene(scene);
 
     penMagnitude.setWidth(2);
+    penMagnitude.setColor(QColor::fromRgb(128, 0, 0));
     penMagnitude.setStyle(Qt::SolidLine);
+    penPhase.setWidth(2);
+    penPhase.setColor(QColor::fromRgb(0, 0, 128));
+    penPhase.setStyle(Qt::DashLine);
     penAxis.setColor(QColor::fromRgb(64, 64, 64));
 
     this->setRenderHints(QPainter::Antialiasing);
+    // transform the whole scene: y is up, x is right
     this->setTransform(QTransform::fromScale(1, -1));
 
     //connect(this->scene, SIGNAL(sceneRectChanged(QRectF))
@@ -93,7 +98,7 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
         }
     }
 
-    toLog(magnitudePoints);
+    toLog(magnitudePoints, 2);
 
     yMin = magnitudePoints.at(0)->y();
     yMax = magnitudePoints.at(0)->y();
@@ -107,6 +112,55 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
             yMax = magnitudePoints.at(i)->y();
         }
     }
+}
+
+void Plot::calculatePhase(QList<Trf *> trfList)
+{
+    phasePoints.clear();
+
+    for(unsigned int i = fStart; i <= fStop; i++) {
+        QPointF *p = new QPointF();
+        p->setX(i); // omega
+        p->setY(0); // empty Phase
+        phasePoints.append(p);
+    }
+
+    double p = 0;
+    double re = 0;
+    double im = 0;
+
+    for(unsigned int i = 0; i <= fStop - fStart; i++) {
+        foreach(Trf *trf, trfList) {
+            if(trf->getTau() != 0) {
+                switch(trf->getType()) {
+                case Trf::Type1:
+                    p = atan2(phasePoints.at(i)->x() * trf->getTau(), 0);
+                    phasePoints.at(i)->setY(phasePoints.at(i)->y() + p);
+                    break;
+                case Trf::Type2:
+                    p = atan2(phasePoints.at(i)->x() * trf->getTau(), 1);
+                    phasePoints.at(i)->setY(phasePoints.at(i)->y() + p);
+                    break;
+                case Trf::Type3:
+                    im = -1.0 / (phasePoints.at(i)->x() * trf->getTau());
+                    re = 0;
+                    p = atan2(im, re);
+                    phasePoints.at(i)->setY(phasePoints.at(i)->y() + p);
+                    break;
+                case Trf::Type4:
+                    re = 1.0 / (pow(phasePoints.at(i)->x() * trf->getTau(), 2));
+                    im = -1.0 / (phasePoints.at(i)->x() * trf->getTau());
+                    p = atan2(im, re);
+                    phasePoints.at(i)->setY(phasePoints.at(i)->y() + p);
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+    }
+
+    toLog(phasePoints, 1);
 }
 
 /**
@@ -129,20 +183,27 @@ void Plot::calculateXAxis()
 /**
  * @brief Plot::toLog
  * @param linearPoints
- * Hilfsfunktion um die lineare XAchse in den linearen Bereich verschieben.
+ * Hilfsfunktion um die lineare XAchse in den logarithmischen Bereich zu
+ * verschieben.
  */
-void Plot::toLog(QVector<QPointF *> linearPoints)
+void Plot::toLog(QVector<QPointF *> linearPoints, int log = 2)
 {
-    foreach(QPointF *p, linearPoints) {
-        double lx = p->x();
-        double la = (double) fStart;
-        double ld = 200.0;
-        p->setX(ld * log10(lx / la));
+    if(log == 2 || log == 1) {
+        foreach(QPointF *p, linearPoints) {
+            double lx = p->x();
+            double la = (double) fStart;
+            double ld = 200.0;
+            p->setX(ld * log10(lx / la));
 
-        double ua = p->y();
-        double ue = 1.0;
-        double lu = 10.0;
-        p->setY(20.0 * lu * log10(ua / ue));
+            if(log == 2) {
+                double ua = p->y();
+                double ue = 1.0;
+                double lu = 10.0;
+                p->setY(20.0 * lu * log10(ua / ue));
+            }
+        }
+    } else {
+        qDebug() << "ERROR: toLog() got wrong int log value!";
     }
 }
 
@@ -159,9 +220,8 @@ void Plot::plot()
     this->viewport()->update();
 
     // magnitude
-
     QPainterPath pathMagnitude;
-    QPolygonF polygonMagnitude; // this is the plotted line
+    QPolygonF polygonMagnitude; // this is the plotted magnitude
 
     foreach(QPointF *p, magnitudePoints) {
         polygonMagnitude.append(QPointF(p->x(), p->y()));
@@ -170,8 +230,16 @@ void Plot::plot()
     pathMagnitude.addPolygon(polygonMagnitude);
     scene->addPath(pathMagnitude, penMagnitude);
 
-    // axis
+    // phase
+    QPainterPath pathPhase;
+    QPolygonF polygonPhase; // this is the plotted phase
 
+    foreach(QPointF *p, phasePoints) {
+        polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
+    }
+
+    pathPhase.addPolygon(polygonPhase);
+    scene->addPath(pathPhase, penPhase);
 
     // x axis
     for(int i = (int) (yMin / lengthYDiv) - 1;
@@ -199,23 +267,24 @@ void Plot::plot()
              << "y2" << y2;
 
     // resize scene rectangle
-
     this->scene->setSceneRect(-50,
                               y1 -50,
                               2 * lengthXDiv + 2*50,
-                              y2 - y1 +100);
-    this->scene->addRect(this->sceneRect(), QPen(QColor::fromRgb(255, 15, 0, 64), 2, Qt::DotLine));
+                              y2 - y1 + 100);
+    this->scene->addRect(this->sceneRect(),
+                         QPen(QColor::fromRgb(255, 15, 0, 64),
+                              2, Qt::DotLine));
     qDebug() << "sceneRect"
              << this->sceneRect().x() << this->sceneRect().y()
              << this->sceneRect().width() << this->sceneRect().height();
 
     // text
     QGraphicsTextItem *textItemFrequency = new QGraphicsTextItem();
-    textItemFrequency->setPlainText("f : "
+    textItemFrequency->setPlainText("ω : "
                                     + QString::number(fStart)
                                     + " ... "
                                     + QString::number(fStop)
-                                    + " Hz");
+                                    + " 1/s");
     textItemFrequency->setPos(lengthXDiv, sceneRect().top() + 50);
     textItemFrequency->setTransform(QTransform::fromScale(1, -1));
     scene->addItem(textItemFrequency);
@@ -232,4 +301,16 @@ void Plot::plot()
     textItemMagnitude->setTransform(QTransform::fromScale(1, -1));
     textItemMagnitude->setRotation(-90);
     scene->addItem(textItemMagnitude);
+
+    QGraphicsTextItem *textItemPhase = new QGraphicsTextItem();
+    textItemPhase->setPlainText("ϕ : "
+                                + QString::number(y1 / 10)
+                                + " ... "
+                                + QString::number(y2 / 10));
+    textItemPhase->setPos(textItemPhase->boundingRect().height() / -2 - 75 + sceneRect().width(),
+                          y1 + (y2 - y1) / 2
+                          - textItemPhase->boundingRect().width() / 2);
+    textItemPhase->setTransform(QTransform::fromScale(1, -1));
+    textItemPhase->setRotation(-90);
+    scene->addItem(textItemPhase);
 }

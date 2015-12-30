@@ -33,15 +33,17 @@ class Plot : public QGraphicsView
 public:
     explicit Plot(QWidget *parent = 0);
     void calculateMagnitude(QList<Trf *> trfList);
+    void calculatePhase(QList<Trf *> trfList);
     void calculateXAxis();
     void plot();
     QVector<QPointF *> magnitudePoints;
-    //QVector<QPointF *> phasePoints;
+    QVector<QPointF *> phasePoints;
     QVector<QPointF *> xAxisPoints;
 
 private:
     QGraphicsScene *scene;
     QPen penMagnitude;
+    QPen penPhase;
     QPen penAxis;
     double yMin;
     double yMax;
@@ -49,7 +51,7 @@ private:
     double lengthYDiv;
     unsigned int fStart;
     unsigned int fStop;
-    void toLog(QVector<QPointF *> linearPoints);
+    void toLog(QVector<QPointF *> linearPoints, int log);
 };
 
 #endif // PLOT_H
