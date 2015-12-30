@@ -25,8 +25,8 @@
 Plot::Plot(QWidget *parent) :
     QGraphicsView(parent)
 {
-    fStart = 10;
-    fStop = 1000;
+    fStart = 1;
+    fStop = 1000000;
     lengthXDiv = 200;
     lengthYDiv = 200;
 
@@ -34,12 +34,12 @@ Plot::Plot(QWidget *parent) :
     this->setScene(scene);
 
     penMagnitude.setWidth(2);
-    penMagnitude.setColor(QColor::fromRgb(128, 0, 0));
+    penMagnitude.setColor(QColor::fromRgb(200, 0, 0));
     penMagnitude.setStyle(Qt::SolidLine);
     penPhase.setWidth(2);
-    penPhase.setColor(QColor::fromRgb(0, 0, 128));
+    penPhase.setColor(QColor::fromRgb(0, 0, 200));
     penPhase.setStyle(Qt::DashLine);
-    penAxis.setColor(QColor::fromRgb(64, 64, 64));
+    penAxis.setColor(QColor::fromRgb(128, 128, 128));
 
     this->setRenderHints(QPainter::Antialiasing);
     // transform the whole scene: y is up, x is right
@@ -224,7 +224,25 @@ void Plot::plot()
     QPolygonF polygonMagnitude; // this is the plotted magnitude
 
     foreach(QPointF *p, magnitudePoints) {
-        polygonMagnitude.append(QPointF(p->x(), p->y()));
+        if(p->x() >= 100 && p->x() < 1000) {
+            if((int) p->x() % 5 == 0) {
+                polygonMagnitude.append(QPointF(p->x(), p->y()));
+            }
+        } else if(p->x() >= 1000 && p->x() < 10000) {
+            if((int) p->x() % 50 == 0) {
+                polygonMagnitude.append(QPointF(p->x(), p->y()));
+            }
+        } else if(p->x() >= 10000 && p->x() < 100000) {
+            if((int) p->x() % 500 == 0) {
+                polygonMagnitude.append(QPointF(p->x(), p->y()));
+            }
+        } else if(p->x() >= 100000) {
+            if((int) p->x() % 10000 == 0) {
+                polygonMagnitude.append(QPointF(p->x(), p->y()));
+            }
+        } else { // give up optimising, just add it
+            polygonMagnitude.append(QPointF(p->x(), p->y()));
+        }
     }
 
     pathMagnitude.addPolygon(polygonMagnitude);
@@ -235,7 +253,25 @@ void Plot::plot()
     QPolygonF polygonPhase; // this is the plotted phase
 
     foreach(QPointF *p, phasePoints) {
-        polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
+        if(p->x() >= 100 && p->x() < 1000) {
+            if((int) p->x() % 5 == 0) {
+                polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
+            }
+        } else if(p->x() >= 1000 && p->x() < 10000) {
+            if((int) p->x() % 50 == 0) {
+                polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
+            }
+        } else if(p->x() >= 10000 && p->x() < 100000) {
+            if((int) p->x() % 500 == 0) {
+                polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
+            }
+        } else if(p->x() >= 100000) {
+            if((int) p->x() % 10000 == 0) {
+                polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
+            }
+        } else { // give up optimising, just add it
+            polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
+        }
     }
 
     pathPhase.addPolygon(polygonPhase);
@@ -246,7 +282,7 @@ void Plot::plot()
         i <= (int) (yMax / lengthYDiv) + 1;
         i++) {
         scene->addLine(0, i * lengthYDiv,
-                       lengthXDiv * (log10(fStop) - 1), i * lengthYDiv,
+                       lengthXDiv * log10(fStop / fStart), i * lengthYDiv,
                        penAxis);
     }
 
@@ -255,7 +291,7 @@ void Plot::plot()
     int y2 = (int) yMax - ((int) yMax % (int) lengthYDiv) + (int) lengthYDiv;
 
     for(int i = 0;
-        i <= 2;
+        i <= log10(fStop / fStart);
         i++) {
         scene->addLine(i * lengthXDiv, y1,
                        i * lengthXDiv, y2,
@@ -269,7 +305,7 @@ void Plot::plot()
     // resize scene rectangle
     this->scene->setSceneRect(-50,
                               y1 -50,
-                              2 * lengthXDiv + 2*50,
+                              log10(fStop / fStart) * lengthXDiv + 2*50,
                               y2 - y1 + 100);
     this->scene->addRect(this->sceneRect(),
                          QPen(QColor::fromRgb(255, 15, 0, 64),
@@ -304,9 +340,10 @@ void Plot::plot()
 
     QGraphicsTextItem *textItemPhase = new QGraphicsTextItem();
     textItemPhase->setPlainText("ϕ : "
-                                + QString::number(y1 / 10)
+                                + QString::number(y1 / 400.0)
                                 + " ... "
-                                + QString::number(y2 / 10));
+                                + QString::number(y2 / 400.0)
+                                + " π");
     textItemPhase->setPos(textItemPhase->boundingRect().height() / -2 - 75 + sceneRect().width(),
                           y1 + (y2 - y1) / 2
                           - textItemPhase->boundingRect().width() / 2);
