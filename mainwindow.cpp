@@ -154,27 +154,12 @@ void MainWindow::viewPlot()
         trfList.append(trf);
     }
 
-    // for debug purposes only
-    qDebug() << "----------";
-    foreach(Trf *t, trfList) {
-        qDebug() << t << t->getType() << t->getTau();
-    }
-
     plot->calculateMagnitude(trfList);
     plot->calculatePhase(trfList);
-    //plot->calculateXAxis();
 
-    /*qDebug() << "--- magnitude";
-    int _ip = 0;
     foreach(QPointF *p, plot->magnitudePoints) {
-        qDebug() << p << _ip++ << ":" << p->x() << p->y();
+        qDebug() << p->x() << p->y();
     }
-
-    qDebug() << "--- phase";
-    _ip = 0;
-    foreach(QPointF *p, plot->phasePoints) {
-        qDebug() << p << _ip++ << ":" << p->x() << p->y();
-    }*/
 
     plot->plot();
 }

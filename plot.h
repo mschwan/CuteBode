@@ -34,7 +34,6 @@ public:
     explicit Plot(QWidget *parent = 0);
     void calculateMagnitude(QList<Trf *> trfList);
     void calculatePhase(QList<Trf *> trfList);
-    void calculateXAxis();
     void plot();
     QVector<QPointF *> magnitudePoints;
     QVector<QPointF *> phasePoints;

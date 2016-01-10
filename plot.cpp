@@ -25,8 +25,8 @@
 Plot::Plot(QWidget *parent) :
     QGraphicsView(parent)
 {
-    fStart = 1;
-    fStop = 1000000;
+    fStart = 10;
+    fStop = 100000;
     lengthXDiv = 200;
     lengthYDiv = 200;
 
@@ -44,8 +44,6 @@ Plot::Plot(QWidget *parent) :
     this->setRenderHints(QPainter::Antialiasing);
     // transform the whole scene: y is up, x is right
     this->setTransform(QTransform::fromScale(1, -1));
-
-    //connect(this->scene, SIGNAL(sceneRectChanged(QRectF))
 }
 
 /**
@@ -114,6 +112,11 @@ void Plot::calculateMagnitude(QList<Trf *> trfList)
     }
 }
 
+/**
+ * @brief Plot::calculatePhase
+ * @param trfList
+ * Berechnet den Phasenfrequenzgang
+ */
 void Plot::calculatePhase(QList<Trf *> trfList)
 {
     phasePoints.clear();
@@ -164,23 +167,6 @@ void Plot::calculatePhase(QList<Trf *> trfList)
 }
 
 /**
- * @brief Plot::calculateXAxis
- * Initialisiert das Array für die Omega-Achse
- */
-void Plot::calculateXAxis()
-{
-    xAxisPoints.clear();
-
-    qDebug() << "--- axis";
-
-    for(unsigned int i = 0; i < log10(fStop); i++) {
-        qDebug() << i;
-        QPointF *p = new QPointF(i * lengthXDiv, 0);
-        xAxisPoints.append(p);
-    }
-}
-
-/**
  * @brief Plot::toLog
  * @param linearPoints
  * Hilfsfunktion um die lineare XAchse in den logarithmischen Bereich zu
@@ -224,25 +210,7 @@ void Plot::plot()
     QPolygonF polygonMagnitude; // this is the plotted magnitude
 
     foreach(QPointF *p, magnitudePoints) {
-        if(p->x() >= 100 && p->x() < 1000) {
-            if((int) p->x() % 5 == 0) {
-                polygonMagnitude.append(QPointF(p->x(), p->y()));
-            }
-        } else if(p->x() >= 1000 && p->x() < 10000) {
-            if((int) p->x() % 50 == 0) {
-                polygonMagnitude.append(QPointF(p->x(), p->y()));
-            }
-        } else if(p->x() >= 10000 && p->x() < 100000) {
-            if((int) p->x() % 500 == 0) {
-                polygonMagnitude.append(QPointF(p->x(), p->y()));
-            }
-        } else if(p->x() >= 100000) {
-            if((int) p->x() % 10000 == 0) {
-                polygonMagnitude.append(QPointF(p->x(), p->y()));
-            }
-        } else { // give up optimising, just add it
-            polygonMagnitude.append(QPointF(p->x(), p->y()));
-        }
+        polygonMagnitude.append(QPointF(p->x(), p->y()));
     }
 
     pathMagnitude.addPolygon(polygonMagnitude);
@@ -252,26 +220,9 @@ void Plot::plot()
     QPainterPath pathPhase;
     QPolygonF polygonPhase; // this is the plotted phase
 
+    // FIXME: stupidly simple but eats memory
     foreach(QPointF *p, phasePoints) {
-        if(p->x() >= 100 && p->x() < 1000) {
-            if((int) p->x() % 5 == 0) {
-                polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
-            }
-        } else if(p->x() >= 1000 && p->x() < 10000) {
-            if((int) p->x() % 50 == 0) {
-                polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
-            }
-        } else if(p->x() >= 10000 && p->x() < 100000) {
-            if((int) p->x() % 500 == 0) {
-                polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
-            }
-        } else if(p->x() >= 100000) {
-            if((int) p->x() % 10000 == 0) {
-                polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
-            }
-        } else { // give up optimising, just add it
-            polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
-        }
+        polygonPhase.append(QPointF(p->x(), lengthYDiv * 2.0/3.1415926 * p->y()));
     }
 
     pathPhase.addPolygon(polygonPhase);
@@ -296,6 +247,11 @@ void Plot::plot()
         scene->addLine(i * lengthXDiv, y1,
                        i * lengthXDiv, y2,
                        penAxis);
+        QGraphicsTextItem *item = new QGraphicsTextItem();
+        item->setPlainText("10^" + QString::number(i + log10(fStart)));
+        item->setPos(i * lengthXDiv - item->boundingRect().width() / 2, y1);
+        item->setTransform(QTransform::fromScale(1, -1));
+        scene->addItem(item);
     }
 
     qDebug() << "Y min/max:" << yMin << yMax;
@@ -316,12 +272,8 @@ void Plot::plot()
 
     // text
     QGraphicsTextItem *textItemFrequency = new QGraphicsTextItem();
-    textItemFrequency->setPlainText("ω : "
-                                    + QString::number(fStart)
-                                    + " ... "
-                                    + QString::number(fStop)
-                                    + " 1/s");
-    textItemFrequency->setPos(lengthXDiv, sceneRect().top() + 50);
+    textItemFrequency->setPlainText("ω  /  1/s");
+    textItemFrequency->setPos(log10(fStop / fStart) * lengthXDiv / 2, sceneRect().top() + 20);
     textItemFrequency->setTransform(QTransform::fromScale(1, -1));
     scene->addItem(textItemFrequency);
 
